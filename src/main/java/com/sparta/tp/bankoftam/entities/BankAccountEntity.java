@@ -31,6 +31,23 @@ public class BankAccountEntity {
         return balance;
     }
 
+    public void deposit(double amount) {
+        if(amount <= 0){
+            throw new IllegalArgumentException("Amount must be greater than 0");
+        }
+        this.balance += amount;
+    }
+
+    public void withdraw(double amount) {
+        if(amount <= 0){
+            throw new IllegalArgumentException("Amount must be greater than 0");
+        }
+        if (this.balance < amount) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+        this.balance -= amount;
+    }
+
     public void setBalance(@NotNull double balance) {
         this.balance = balance;
     }
