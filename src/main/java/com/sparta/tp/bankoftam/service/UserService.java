@@ -36,6 +36,7 @@ public class UserService {
     public UserEntity createUser(UserEntity userEntity){
         BankAccountEntity bankAccountEntity = new BankAccountEntity();
         bankAccountRepository.save(bankAccountEntity);
+
         userEntity.setBankAccount(bankAccountEntity);
         return userRepository.save(userEntity);
     }
@@ -55,4 +56,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public void deleteAllUsers() {
+        userRepository.deleteAll();
+    }
 }

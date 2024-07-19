@@ -3,10 +3,7 @@ package com.sparta.tp.bankoftam.controller;
 import com.sparta.tp.bankoftam.service.BankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -21,11 +18,21 @@ public class BankAccountController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<Void> transferMoney(
+    public ResponseEntity<Double> transferMoney(
             @RequestParam Long from,
             @RequestParam Long to,
             @RequestParam double amount){
-        bankAccountService.transferMoney(from, to, amount);
-        return ResponseEntity.ok().build();
+        double newBalance = bankAccountService.transferMoney(from, to, amount);
+        return ResponseEntity.ok(newBalance);
+    }
+
+    @PutMapping("/{accountNumber}/deposit")
+    public double deposit(@PathVariable Long accountNumber, @RequestParam double amount) {
+        return bankAccountService.deposit(accountNumber, amount);
+    }
+
+    @PutMapping("/{accountNumber}/withdraw")
+    public double withdraw(@PathVariable Long accountNumber, @RequestParam double amount) {
+        return bankAccountService.withdraw(accountNumber, amount);
     }
 }

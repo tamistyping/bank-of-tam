@@ -20,10 +20,24 @@ public class BankAccountService {
                 .orElseThrow(() -> new BankAccountNotFoundException("Bank account not found with number " + accountNumber));
     }
 
-
+    @Transactional
+    public double deposit(Long accountNumber, double amount) {
+        BankAccountEntity account = getBankAccountById(accountNumber);
+        account.deposit(amount);
+        bankAccountRepository.save(account);
+        return account.getBalance();
+    }
 
     @Transactional
-    public void transferMoney(Long from, Long to, double amount){
+    public double withdraw(Long accountNumber, double amount) {
+        BankAccountEntity account = getBankAccountById(accountNumber);
+        account.withdraw(amount);
+        bankAccountRepository.save(account);
+        return account.getBalance();
+    }
+
+    @Transactional
+    public double transferMoney(Long from, Long to, double amount){
 
         BankAccountEntity fromAccount = getBankAccountById(from);
         BankAccountEntity toAccount = getBankAccountById(to);
@@ -33,5 +47,7 @@ public class BankAccountService {
 
         bankAccountRepository.save(fromAccount);
         bankAccountRepository.save(toAccount);
+
+        return fromAccount.getBalance();
     }
 }

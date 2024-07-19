@@ -1,5 +1,6 @@
 package com.sparta.tp.bankoftam.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -16,6 +17,7 @@ public class BankAccountEntity {
     private double balance = 0.0;
 
     @OneToOne(mappedBy = "bankAccount")
+    @JsonBackReference
     private UserEntity user;
 
     public Long getAccountNumber() {

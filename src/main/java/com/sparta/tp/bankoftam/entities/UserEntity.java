@@ -1,5 +1,6 @@
 package com.sparta.tp.bankoftam.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,7 @@ public class UserEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_number", referencedColumnName = "account_number")
+    @JsonManagedReference
     private BankAccountEntity bankAccount;
 
     public Long getId() {
@@ -40,6 +42,7 @@ public class UserEntity {
 
     public void setBankAccount(BankAccountEntity bankAccount) {
         this.bankAccount = bankAccount;
+        bankAccount.setUser(this);
     }
 
     public @Size(min = 3, max = 15) @NotNull String getUsername() {
