@@ -34,6 +34,14 @@ public class UserEntity {
         this.id = id;
     }
 
+    public BankAccountEntity getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(BankAccountEntity bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+
     public @Size(min = 3, max = 15) @NotNull String getUsername() {
         return username;
     }
