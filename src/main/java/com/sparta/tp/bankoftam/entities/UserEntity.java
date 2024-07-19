@@ -22,6 +22,10 @@ public class UserEntity {
     @NotNull
     private String animal;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_number", referencedColumnName = "account_number")
+    private BankAccountEntity bankAccount;
+
     public Long getId() {
         return id;
     }
