@@ -5,6 +5,7 @@ import com.sparta.tp.bankoftam.entities.UserEntity;
 import com.sparta.tp.bankoftam.exception.UserNotFoundException;
 import com.sparta.tp.bankoftam.repository.BankAccountRepository;
 import com.sparta.tp.bankoftam.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
     }
 
+    @Transactional
     public UserEntity createUser(UserEntity userEntity){
         BankAccountEntity bankAccountEntity = new BankAccountEntity();
         bankAccountRepository.save(bankAccountEntity);
