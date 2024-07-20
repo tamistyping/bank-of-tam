@@ -1,9 +1,11 @@
 import React from 'react';
 
-function Footer({ onLogout }) {
+function Footer({ isAuthenticated, onLogout }) {
     return (
         <div className="footer">
-            <button onClick={onLogout}>Logout</button>
+            {isAuthenticated && (
+                <button onClick={onLogout}>Logout</button>
+            )}
         </div>
     );
 }

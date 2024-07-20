@@ -25,7 +25,10 @@ function Login({ onLogin }) {
             try {
                 const user = await getUserByUsername(username);
                 if (user.animal.toLowerCase() === favoriteAnimal.toLowerCase()) {
-                    localStorage.setItem('user', username);
+                    localStorage.setItem('user', JSON.stringify({
+                        username: user.username,
+                        accountNumber: user.bankAccount ? user.bankAccount.accountNumber : null
+                    }));
                     onLogin();
                     navigate('/account');
                 } else {

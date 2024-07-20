@@ -1,43 +1,43 @@
-import axios from "axios";
+import axios from 'axios';
 
-const URL = process.env.REACT_APP_BACKEND_URL;
+const URL = process.env.REACT_APP_API_URL;
 
-export const getUserByUsername = (username) => {
+export const getUserByUsername = async (username) => {
     try {
-        const response = axios.get(`http://localhost:8080/users/username/${username}`);
+        const response = await axios.get(`${URL}/users/username/${username}`);
         return response.data;
     } catch (error) {
-        console.error('Error getting username');
-        throw error;
-    }
-}
-
-export const getAllUsers = () => {
-    try{
-        const response = axios.get(`${URL}/users`);
-        return response.data;
-    } catch (error) {
-        console.error("Error getting users", error);
+        console.error('Error getting user by username:', error);
         throw error;
     }
 };
 
-export const getUser =  (id) => {
-    try{
-        const response =  axios.get(`${URL}/users/${id}`);
+export const getAllUsers = async () => {
+    try {
+        const response = await axios.get(`${URL}/users`);
         return response.data;
     } catch (error) {
-        console.error("Error getting user", error);
+        console.error('Error getting all users:', error);
+        throw error;
+    }
+};
+
+export const getUser = async (id) => {
+    try {
+        const response = await axios.get(`${URL}/users/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error getting user by ID:', error);
         throw error;
     }
 };
 
 export const createUser = async (userData) => {
     try {
-        const response =  axios.post(`${URL}/users`, userData);
+        const response = await axios.post(`${URL}/users`, userData);
         return response.data;
     } catch (error) {
-        console.error("Error creating user", error);
+        console.error('Error creating user:', error);
         throw error;
     }
-}
+};

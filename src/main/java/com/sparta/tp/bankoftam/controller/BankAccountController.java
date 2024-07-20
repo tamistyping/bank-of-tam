@@ -19,11 +19,14 @@ public class BankAccountController {
     }
 
     @GetMapping("/balance/{accountNumber}")
-    public ResponseEntity<Double> getBalance(@PathVariable Long accountNumber) {
+    public ResponseEntity<Double> getBalance(@PathVariable String accountNumber) {
         try {
-            double balance = bankAccountService.getBalance(accountNumber);
+            Long accountNumberLong = Long.parseLong(accountNumber);
 
+            double balance = bankAccountService.getBalance(accountNumberLong);
             return new ResponseEntity<>(balance, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

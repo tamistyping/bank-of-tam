@@ -1,35 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getBalance, depositAmount, withdrawAmount, transferAmount } from '../services/bankAccountService'; // Adjust the path as needed
 
 const AccountPage = () => {
     const [balance, setBalance] = useState(0);
-    const [depositAmount, setDepositAmount] = useState('');
-    const [withdrawAmount, setWithdrawAmount] = useState('');
-    const [transferAmount, setTransferAmount] = useState('');
+    const [depositAmountValue, setDepositAmountValue] = useState('');
+    const [withdrawAmountValue, setWithdrawAmountValue] = useState('');
+    const [transferAmountValue, setTransferAmountValue] = useState('');
     const [transferRecipient, setTransferRecipient] = useState('');
     const [error, setError] = useState('');
 
     useEffect(() => {
-        // Fetch the balance on component mount
-        const fetchBalance = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/account/balance');
-                setBalance(response.data.balance);
-            } catch (err) {
-                setError('Failed to fetch balance');
-            }
-        };
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            setError('User data not found in localStorage.');
+            return;
+        }
 
-        fetchBalance();
+        try {
+            const user = JSON.parse(userString);
+            const accountNo = user.accountNumber;
+            // console.log('Retrieved account number:', accountNo);
+
+            if (!accountNo) {
+                setError('Account number is not available.');
+                return;
+            }
+
+            const fetchBalance = async () => {
+                try {
+                    const response = await getBalance(accountNo);
+                    setBalance(response);
+                } catch (err) {
+                    console.error('Error fetching balance:', err);
+                    setError('Failed to fetch balance');
+                }
+            };
+
+            fetchBalance();
+        } catch (e) {
+            setError('Failed to parse user data.');
+        }
     }, []);
 
     const handleDeposit = async (event) => {
         event.preventDefault();
         try {
-            await axios.post('http://localhost:8080/account/deposit', { amount: depositAmount });
-            setDepositAmount('');
-            // Update balance
-            setBalance(balance + parseFloat(depositAmount));
+            await depositAmount(depositAmountValue);
+            setDepositAmountValue('');
+            setBalance(balance + parseFloat(depositAmountValue));
         } catch (err) {
             setError('Failed to deposit amount');
         }
@@ -38,10 +56,9 @@ const AccountPage = () => {
     const handleWithdraw = async (event) => {
         event.preventDefault();
         try {
-            await axios.post('http://localhost:8080/account/withdraw', { amount: withdrawAmount });
-            setWithdrawAmount('');
-            // Update balance
-            setBalance(balance - parseFloat(withdrawAmount));
+            await withdrawAmount(withdrawAmountValue);
+            setWithdrawAmountValue('');
+            setBalance(balance - parseFloat(withdrawAmountValue));
         } catch (err) {
             setError('Failed to withdraw amount');
         }
@@ -50,11 +67,10 @@ const AccountPage = () => {
     const handleTransfer = async (event) => {
         event.preventDefault();
         try {
-            await axios.post('http://localhost:8080/account/transfer', { amount: transferAmount, recipient: transferRecipient });
-            setTransferAmount('');
+            await transferAmount(transferAmountValue, transferRecipient);
+            setTransferAmountValue('');
             setTransferRecipient('');
-            // Update balance
-            setBalance(balance - parseFloat(transferAmount));
+            setBalance(balance - parseFloat(transferAmountValue));
         } catch (err) {
             setError('Failed to transfer amount');
         }
@@ -71,8 +87,8 @@ const AccountPage = () => {
                 <h3>Deposit</h3>
                 <input
                     type="number"
-                    value={depositAmount}
-                    onChange={(e) => setDepositAmount(e.target.value)}
+                    value={depositAmountValue}
+                    onChange={(e) => setDepositAmountValue(e.target.value)}
                     placeholder="Amount"
                     required
                 />
@@ -82,8 +98,8 @@ const AccountPage = () => {
                 <h3>Withdraw</h3>
                 <input
                     type="number"
-                    value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    value={withdrawAmountValue}
+                    onChange={(e) => setWithdrawAmountValue(e.target.value)}
                     placeholder="Amount"
                     required
                 />
@@ -100,8 +116,8 @@ const AccountPage = () => {
                 />
                 <input
                     type="number"
-                    value={transferAmount}
-                    onChange={(e) => setTransferAmount(e.target.value)}
+                    value={transferAmountValue}
+                    onChange={(e) => setTransferAmountValue(e.target.value)}
                     placeholder="Amount"
                     required
                 />

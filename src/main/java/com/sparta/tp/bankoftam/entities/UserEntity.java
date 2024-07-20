@@ -69,4 +69,8 @@ public class UserEntity {
     public void setAnimal(@NotNull String animal) {
         this.animal = animal;
     }
+
+    public Long getAccountNumber() {
+        return bankAccount != null ? bankAccount.getAccountNumber() : null;
+    }
 }
