@@ -20,6 +20,11 @@ public class BankAccountService {
                 .orElseThrow(() -> new BankAccountNotFoundException("Bank account not found with number " + accountNumber));
     }
 
+    public double getBalance(Long accountNumber) {
+        BankAccountEntity account = getBankAccountById(accountNumber);
+        return account.getBalance();
+    }
+
     @Transactional
     public double deposit(Long accountNumber, double amount) {
         BankAccountEntity account = getBankAccountById(accountNumber);

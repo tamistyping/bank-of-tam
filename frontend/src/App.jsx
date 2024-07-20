@@ -1,12 +1,26 @@
-import './App.css';
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/layout/Header';  // Ensure this file exists and is correctly named
+import './App.css'
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import HomePage from './components/HomePage';
-import Login from './components/LogIn';  // Ensure this file exists and is correctly named
-import Signup from './components/SignUp';  // Ensure this file exists and is correctly named
+import SignUp from "./components/SignUp";
+import LogIn from "./components/LogIn";
+import Account from "./components/Account";
 
 function App() {
+
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('user'));
+
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+    };
+
     return (
         <Router>
             <div className="App">
@@ -14,10 +28,12 @@ function App() {
                 <main>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
+                        <Route path="/login" element={<LogIn onLogin={handleLogin} />} />
+                        <Route path="/signup" element={<SignUp />} />
+                        <Route path="/account" element={isAuthenticated ? <Account /> : <HomePage />} />
                     </Routes>
                 </main>
+                {isAuthenticated && <Footer onLogout={handleLogout} />}
             </div>
         </Router>
     );

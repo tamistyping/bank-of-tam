@@ -2,6 +2,7 @@ package com.sparta.tp.bankoftam.controller;
 
 import com.sparta.tp.bankoftam.service.BankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,17 @@ public class BankAccountController {
     @Autowired
     public BankAccountController(BankAccountService bankAccountService) {
         this.bankAccountService = bankAccountService;
+    }
+
+    @GetMapping("/balance/{accountNumber}")
+    public ResponseEntity<Double> getBalance(@PathVariable Long accountNumber) {
+        try {
+            double balance = bankAccountService.getBalance(accountNumber);
+
+            return new ResponseEntity<>(balance, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/transfer")

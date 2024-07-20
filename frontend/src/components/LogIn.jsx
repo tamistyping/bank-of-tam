@@ -1,49 +1,49 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {getUserByUsername} from "../services/userService";
 
-const Login = () => {
-    const [step, setStep] = useState(1);
+function Login({ onLogin }) {
     const [username, setUsername] = useState('');
     const [favoriteAnimal, setFavoriteAnimal] = useState('');
+    const [step, setStep] = useState(1);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleLoginClick = async () => {
-        if (step === 1 && username) {
+        if (step === 1) {
             try {
-                // Use environment variable for the API base URL
-                const apiUrl = process.env.REACT_APP_API_URL;
-                const response = await axios.get(`${apiUrl}/users/${username}`);
-
-                if (response.status === 200) {
+                const user = await getUserByUsername(username);
+                if (user) {
                     setStep(2);
                 } else {
-                    setError('User not found');
+                    setError('Username not found');
                 }
             } catch (error) {
-                setError('Error connecting to backend');
+                setError('Username not found');
             }
-        } else if (step === 2 && favoriteAnimal) {
-            // Assume correct answer is 'dog' for demonstration purposes
-            if (favoriteAnimal.toLowerCase() === 'dog') {
-                localStorage.setItem('user', username);
-                navigate('/');
-            } else {
-                setError('Invalid answer to security question');
+        } else if (step === 2) {
+            try {
+                const user = await getUserByUsername(username);
+                if (user.animal.toLowerCase() === favoriteAnimal.toLowerCase()) {
+                    localStorage.setItem('user', username);
+                    onLogin();
+                    navigate('/account');
+                } else {
+                    setError('Invalid answer to security question');
+                }
+            } catch (error) {
+                setError('An error occurred');
             }
         }
     };
 
     return (
-        <div className="login-page">
-            {error && <p className="error">{error}</p>}
+        <div>
             {step === 1 && (
                 <div>
-                    <h2>Login</h2>
                     <input
                         type="text"
-                        placeholder="Enter your username"
+                        placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
@@ -52,19 +52,18 @@ const Login = () => {
             )}
             {step === 2 && (
                 <div>
-                    <h2>Security Question</h2>
-                    <p>What's your favorite animal?</p>
                     <input
                         type="text"
-                        placeholder="Enter your answer"
+                        placeholder="What's your favorite animal?"
                         value={favoriteAnimal}
                         onChange={(e) => setFavoriteAnimal(e.target.value)}
                     />
                     <button onClick={handleLoginClick}>Submit</button>
                 </div>
             )}
+            {error && <p>{error}</p>}
         </div>
     );
-};
+}
 
 export default Login;

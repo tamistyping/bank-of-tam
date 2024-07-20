@@ -31,3 +31,28 @@ button {
 h1 {
   margin-bottom: 1rem;
 }
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.1); /* Optional background color for visibility */
+  border-top: 1px solid #ddd; /* Optional border for separation */
+  border-radius: 5px 0 0 0; /* Optional border-radius */
+}
+
+.logout-button {
+  background-color: #f44336; /* Red color for logout button */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}

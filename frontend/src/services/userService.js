@@ -2,11 +2,21 @@ import axios from "axios";
 
 const URL = process.env.REACT_APP_BACKEND_URL;
 
+export const getUserByUsername = (username) => {
+    try {
+        const response = axios.get(`http://localhost:8080/users/username/${username}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error getting username');
+        throw error;
+    }
+}
+
 export const getAllUsers = () => {
     try{
         const response = axios.get(`${URL}/users`);
         return response.data;
-    } catch {
+    } catch (error) {
         console.error("Error getting users", error);
         throw error;
     }
