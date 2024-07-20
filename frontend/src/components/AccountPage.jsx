@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getBalance, depositAmount, withdrawAmount, transferAmount } from '../services/bankAccountService'; // Adjust the path as needed
+import { Container, Row, Col, Form, Button, Alert, Card } from 'react-bootstrap';
+import { getBalance, depositAmount, withdrawAmount, transferAmount } from '../services/bankAccountService';
 
 const AccountPage = () => {
     const [balance, setBalance] = useState(0);
@@ -8,6 +9,8 @@ const AccountPage = () => {
     const [transferAmountValue, setTransferAmountValue] = useState('');
     const [transferRecipient, setTransferRecipient] = useState('');
     const [error, setError] = useState('');
+    const [accountNumber, setAccountNumber] = useState('');
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
         const userString = localStorage.getItem('user');
@@ -19,12 +22,15 @@ const AccountPage = () => {
         try {
             const user = JSON.parse(userString);
             const accountNo = user.accountNumber;
-            // console.log('Retrieved account number:', accountNo);
+            const userName = user.username;
 
-            if (!accountNo) {
-                setError('Account number is not available.');
+            if (!accountNo || !userName) {
+                setError('Account number or username is not available.');
                 return;
             }
+
+            setAccountNumber(accountNo);
+            setUsername(userName);
 
             const fetchBalance = async () => {
                 try {
@@ -45,9 +51,15 @@ const AccountPage = () => {
     const handleDeposit = async (event) => {
         event.preventDefault();
         try {
-            await depositAmount(depositAmountValue);
-            setDepositAmountValue('');
-            setBalance(balance + parseFloat(depositAmountValue));
+            if (accountNumber && depositAmountValue) {
+                await depositAmount(accountNumber, parseFloat(depositAmountValue));
+                setDepositAmountValue('');
+                const updatedBalance = await getBalance(accountNumber);
+                setBalance(updatedBalance);
+                setError('');
+            } else {
+                setError('Account number or deposit amount is missing.');
+            }
         } catch (err) {
             setError('Failed to deposit amount');
         }
@@ -56,9 +68,15 @@ const AccountPage = () => {
     const handleWithdraw = async (event) => {
         event.preventDefault();
         try {
-            await withdrawAmount(withdrawAmountValue);
-            setWithdrawAmountValue('');
-            setBalance(balance - parseFloat(withdrawAmountValue));
+            if (accountNumber && withdrawAmountValue) {
+                await withdrawAmount(accountNumber, parseFloat(withdrawAmountValue));
+                setWithdrawAmountValue('');
+                const updatedBalance = await getBalance(accountNumber);
+                setBalance(updatedBalance);
+                setError('');
+            } else {
+                setError('Account number or withdrawal amount is missing.');
+            }
         } catch (err) {
             setError('Failed to withdraw amount');
         }
@@ -67,64 +85,95 @@ const AccountPage = () => {
     const handleTransfer = async (event) => {
         event.preventDefault();
         try {
-            await transferAmount(transferAmountValue, transferRecipient);
-            setTransferAmountValue('');
-            setTransferRecipient('');
-            setBalance(balance - parseFloat(transferAmountValue));
+            if (accountNumber && transferAmountValue && transferRecipient) {
+                await transferAmount(accountNumber, transferRecipient, parseFloat(transferAmountValue));
+                setTransferAmountValue('');
+                setTransferRecipient('');
+                const updatedBalance = await getBalance(accountNumber);
+                setBalance(updatedBalance);
+                setError('');
+            } else {
+                setError('Account number, transfer amount, or recipient is missing.');
+            }
         } catch (err) {
             setError('Failed to transfer amount');
         }
     };
 
     return (
-        <div className="account-page">
-            <h1>Account Page</h1>
-            {error && <p className="error">{error}</p>}
-            <div className="balance">
-                <h2>Balance: ${balance.toFixed(2)}</h2>
-            </div>
-            <form onSubmit={handleDeposit} className="form">
-                <h3>Deposit</h3>
-                <input
-                    type="number"
-                    value={depositAmountValue}
-                    onChange={(e) => setDepositAmountValue(e.target.value)}
-                    placeholder="Amount"
-                    required
-                />
-                <button type="submit">Deposit</button>
-            </form>
-            <form onSubmit={handleWithdraw} className="form">
-                <h3>Withdraw</h3>
-                <input
-                    type="number"
-                    value={withdrawAmountValue}
-                    onChange={(e) => setWithdrawAmountValue(e.target.value)}
-                    placeholder="Amount"
-                    required
-                />
-                <button type="submit">Withdraw</button>
-            </form>
-            <form onSubmit={handleTransfer} className="form">
-                <h3>Transfer</h3>
-                <input
-                    type="text"
-                    value={transferRecipient}
-                    onChange={(e) => setTransferRecipient(e.target.value)}
-                    placeholder="Recipient Username"
-                    required
-                />
-                <input
-                    type="number"
-                    value={transferAmountValue}
-                    onChange={(e) => setTransferAmountValue(e.target.value)}
-                    placeholder="Amount"
-                    required
-                />
-                <button type="submit">Transfer</button>
-            </form>
-        </div>
+        <Container className="mt-5">
+            <Row className="justify-content-center">
+                <Col md={8} lg={6}>
+                    <h1 className="text-center mb-4">Account Page</h1>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <div className="mb-4 text-center">
+                        <h4>Hey {username}, your account number is {accountNumber}.</h4>
+                    </div>
+                    <Card className="mb-3">
+                        <Card.Body className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
+                            <Card.Title className="text-center w-50">Balance: £{balance.toFixed(2)}</Card.Title>
+                        </Card.Body>
+                    </Card>
+                    <Form onSubmit={handleDeposit} className="mb-4">
+                        <Form.Group controlId="formDeposit">
+                            <Form.Label>Deposit Amount</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={depositAmountValue}
+                                onChange={(e) => setDepositAmountValue(e.target.value)}
+                                placeholder="Enter amount"
+                                required
+                            />
+                        </Form.Group>
+                        <Button variant="primary" type="submit" className="mt-3">
+                            Deposit
+                        </Button>
+                    </Form>
+                    <Form onSubmit={handleWithdraw} className="mb-4">
+                        <Form.Group controlId="formWithdraw">
+                            <Form.Label>Withdraw Amount</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={withdrawAmountValue}
+                                onChange={(e) => setWithdrawAmountValue(e.target.value)}
+                                placeholder="Enter amount"
+                                required
+                            />
+                        </Form.Group>
+                        <Button variant="danger" type="submit" className="mt-3">
+                            Withdraw
+                        </Button>
+                    </Form>
+                    <Form onSubmit={handleTransfer}>
+                        <Form.Group controlId="formTransferRecipient">
+                            <Form.Label>Recipient Account Number</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={transferRecipient}
+                                onChange={(e) => setTransferRecipient(e.target.value)}
+                                placeholder="Enter recipient account number"
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formTransferAmount" className="mt-3">
+                            <Form.Label>Transfer Amount</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={transferAmountValue}
+                                onChange={(e) => setTransferAmountValue(e.target.value)}
+                                placeholder="Enter amount"
+                                required
+                            />
+                        </Form.Group>
+                        <Button variant="success" type="submit" className="mt-3 mb-5">
+                            Transfer
+                        </Button>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
 export default AccountPage;
+

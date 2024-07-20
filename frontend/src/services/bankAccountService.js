@@ -16,7 +16,7 @@ export const getBalance = async (accountNumber) => {
 
 export const depositAmount = async (accountNumber, amount) => {
     try {
-        const response = await axios.put(`${URL}/${accountNumber}/deposit`, null, {
+        const response = await axios.put(`${URL}/bank-accounts/${accountNumber}/deposit`, null, {
             params: { amount }
         });
         return response.data;
@@ -28,7 +28,7 @@ export const depositAmount = async (accountNumber, amount) => {
 
 export const withdrawAmount = async (accountNumber, amount) => {
     try {
-        const response = await axios.put(`${URL}/${accountNumber}/withdraw`, null, {
+        const response = await axios.put(`${URL}/bank-accounts/${accountNumber}/withdraw`, null, {
             params: { amount }
         });
         return response.data;
@@ -38,10 +38,10 @@ export const withdrawAmount = async (accountNumber, amount) => {
     }
 };
 
-export const transferAmount = async (accountNumber, amount, recipient) => {
+export const transferAmount = async (fromAccountNumber, toAccountNumber, amount) => {
     try {
-        const response = await axios.put(`${URL}/${accountNumber}/transfer`, null, {
-            params: { amount, recipient }
+        const response = await axios.post(`${URL}/bank-accounts/transfer`, null, {
+            params: { from: fromAccountNumber, to: toAccountNumber, amount }
         });
         return response.data;
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {getUserByUsername} from "../services/userService";
+import { getUserByUsername } from '../services/userService';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
 
 function Login({ onLogin }) {
     const [username, setUsername] = useState('');
@@ -41,31 +42,44 @@ function Login({ onLogin }) {
     };
 
     return (
-        <div>
+        <Container className="full-height mt-5">
+            <h2 className="mb-4 text-center">Log In</h2>
+            {error && <Alert variant="danger">{error}</Alert>}
             {step === 1 && (
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <button onClick={handleLoginClick}>Next</button>
-                </div>
+                <Form>
+                    <Form.Group controlId="formUsername" className="mb-3">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter your username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                    </Form.Group>
+                    <Button variant="primary" onClick={handleLoginClick} className="w-100">
+                        Next
+                    </Button>
+                </Form>
             )}
             {step === 2 && (
-                <div>
-                    <input
-                        type="text"
-                        placeholder="What's your favorite animal?"
-                        value={favoriteAnimal}
-                        onChange={(e) => setFavoriteAnimal(e.target.value)}
-                    />
-                    <button onClick={handleLoginClick}>Submit</button>
-                </div>
+                <Form>
+                    <Form.Group controlId="formFavoriteAnimal" className="mb-3">
+                        <Form.Label>What's your favorite animal?</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter your favorite animal"
+                            value={favoriteAnimal}
+                            onChange={(e) => setFavoriteAnimal(e.target.value)}
+                            required
+                        />
+                    </Form.Group>
+                    <Button variant="primary" onClick={handleLoginClick} className="w-100">
+                        Submit
+                    </Button>
+                </Form>
             )}
-            {error && <p>{error}</p>}
-        </div>
+        </Container>
     );
 }
 
