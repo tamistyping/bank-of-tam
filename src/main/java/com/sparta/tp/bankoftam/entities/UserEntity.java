@@ -15,6 +15,7 @@ public class UserEntity {
 
     @Size(min = 3, max = 15)
     @NotNull
+    @Column(unique = true)
     private String username;
 
     @NotNull

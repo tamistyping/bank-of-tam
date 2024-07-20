@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const HomePage = () => {
+const HomePage = () => {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
@@ -17,5 +17,7 @@ export const HomePage = () => {
             <button onClick={handleLoginClick}>Already have an account?</button>
             <button onClick={handleSignUpClick}>Don't have an account?</button>
         </div>
-    )
+    );
 }
+
+export default HomePage;
